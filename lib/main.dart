@@ -123,7 +123,6 @@ class HomePage extends StatelessWidget {
 
                       return SegundaTela(
                         nomeCurso: nomeCurso,
-                        certificado: certificado,
                       );
                     },
                   ),
@@ -140,11 +139,9 @@ class HomePage extends StatelessWidget {
 class SegundaTela extends StatelessWidget {
 
   final String nomeCurso;
-  final bool certificado;
 
   SegundaTela({
     required this.nomeCurso,
-    required this.certificado,
   });
 
   @override
@@ -171,15 +168,6 @@ class SegundaTela extends StatelessWidget {
             Text(
               nomeCurso,
               style: TextStyle(fontSize: 20),
-            ),
-
-            SizedBox(height: 20),
-
-            Text(
-              certificado
-                  ? "Com certificado"
-                  : "Sem certificado",
-              style: TextStyle(fontSize: 18),
             ),
 
             SizedBox(height: 20),
