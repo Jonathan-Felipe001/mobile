@@ -27,14 +27,11 @@ class TelaCompra extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Finalizar Compra"),
-        backgroundColor: Colors.blue,
       ),
       body: Center(
         child: Card(
-          elevation: 5,
           margin: EdgeInsets.all(20),
           child: Padding(
             padding: EdgeInsets.all(20),

@@ -20,10 +20,8 @@ class _TelaFormularioState extends State<TelaFormulario> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Dados da Compra"),
-        backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -40,7 +38,6 @@ class _TelaFormularioState extends State<TelaFormulario> {
             );
           },
           child: Card(
-            elevation: 5,
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Column(
