@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'segunda_tela.dart';
+import 'tela_formulario.dart';
 
 class TelaCompra extends StatelessWidget {
   final String nomeCurso;
@@ -106,7 +106,7 @@ class TelaCompra extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return SegundaTela(
+                            return TelaFormulario(
                               nomeCurso: nomeCurso,
                               certificado: certificado,
                             );
