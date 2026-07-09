@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
 import 'segunda_tela.dart';
 
-class TelaCompra extends StatefulWidget {
+class TelaCompra extends StatelessWidget {
   final String nomeCurso;
   final bool certificado;
+  final int duracaoMeses;
+  final double precoMensal;
 
   TelaCompra({
     required this.nomeCurso,
     required this.certificado,
+    required this.duracaoMeses,
+    required this.precoMensal,
   });
 
-  @override
-  State<TelaCompra> createState() => _TelaCompraState();
-}
-
-class _TelaCompraState extends State<TelaCompra> {
-  int meses = 1;
-  double precoMensal = 100;
-
   double calcularPreco() {
-    double total = precoMensal * meses;
+    double total = precoMensal * duracaoMeses;
 
-    if (widget.certificado) {
+    if (certificado) {
       total += 50;
-    }
-
-    if (meses >= 6) {
-      total *= 0.9;
     }
 
     return total;
@@ -56,7 +48,7 @@ class _TelaCompraState extends State<TelaCompra> {
                 ),
                 SizedBox(height: 15),
                 Text(
-                  widget.nomeCurso,
+                  nomeCurso,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -64,41 +56,18 @@ class _TelaCompraState extends State<TelaCompra> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  "Escolha o tempo de acesso:",
+                  "Duração do curso: $duracaoMeses mês(es)",
                   style: TextStyle(
                     fontSize: 18,
                   ),
                 ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.remove),
-                      onPressed: () {
-                        if (meses > 1) {
-                          setState(() {
-                            meses--;
-                          });
-                        }
-                      },
-                    ),
-                    Text(
-                      "$meses mês(es)",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        setState(() {
-                          meses++;
-                        });
-                      },
-                    ),
-                  ],
+                SizedBox(height: 5),
+                Text(
+                  "Mensalidade: R\$ ${precoMensal.toStringAsFixed(2)}",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
                 ),
                 SizedBox(height: 20),
                 TweenAnimationBuilder<double>(
@@ -120,7 +89,7 @@ class _TelaCompraState extends State<TelaCompra> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  widget.certificado
+                  certificado
                       ? "Certificado incluso (+R\$50)"
                       : "Sem certificado",
                   style: TextStyle(
@@ -138,8 +107,8 @@ class _TelaCompraState extends State<TelaCompra> {
                         MaterialPageRoute(
                           builder: (context) {
                             return SegundaTela(
-                              nomeCurso: widget.nomeCurso,
-                              certificado: widget.certificado,
+                              nomeCurso: nomeCurso,
+                              certificado: certificado,
                             );
                           },
                         ),

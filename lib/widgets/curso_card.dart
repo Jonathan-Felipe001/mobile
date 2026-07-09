@@ -5,12 +5,16 @@ class CursoCard extends StatefulWidget {
   final String nomeCurso;
   final IconData icone;
   final String descricao;
+  final int duracaoMeses;
+  final double precoMensal;
   final bool certificadoInicial;
 
   CursoCard({
     required this.nomeCurso,
     required this.icone,
     required this.descricao,
+    required this.duracaoMeses,
+    required this.precoMensal,
     this.certificadoInicial = false,
   });
 
@@ -56,6 +60,14 @@ class _CursoCardState extends State<CursoCard> {
             SizedBox(height: 10),
             Text(widget.descricao),
             SizedBox(height: 10),
+            Text(
+              "Duração: ${widget.duracaoMeses} mês(es)  •  R\$ ${widget.precoMensal.toStringAsFixed(2)}/mês",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[700],
+              ),
+            ),
+            SizedBox(height: 10),
             CheckboxListTile(
               title: Text("Adicionar certificado"),
               value: certificado,
@@ -78,6 +90,8 @@ class _CursoCardState extends State<CursoCard> {
                         return TelaCompra(
                           nomeCurso: widget.nomeCurso,
                           certificado: certificado,
+                          duracaoMeses: widget.duracaoMeses,
+                          precoMensal: widget.precoMensal,
                         );
                       },
                     ),
