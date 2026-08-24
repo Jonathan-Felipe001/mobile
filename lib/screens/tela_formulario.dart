@@ -15,7 +15,70 @@ class TelaFormulario extends StatefulWidget {
 }
 
 class _TelaFormularioState extends State<TelaFormulario> {
+  final _formKey = GlobalKey<FormState>();
+  final _nomeController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _cpfController = TextEditingController();
+  final _telefoneController = TextEditingController();
+  final _cepController = TextEditingController();
+  final _enderecoController = TextEditingController();
+  final _cartaoController = TextEditingController();
   String formaPagamento = "Cartão de Crédito";
+
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _emailController.dispose();
+    _cpfController.dispose();
+    _telefoneController.dispose();
+    _cepController.dispose();
+    _enderecoController.dispose();
+    _cartaoController.dispose();
+    super.dispose();
+  }
+
+  String? _campoObrigatorio(String? valor, String campo) {
+    if (valor == null || valor.trim().isEmpty) {
+      return "Informe $campo";
+    }
+    return null;
+  }
+
+  String? _validarEmail(String? valor) {
+    if (valor == null || valor.trim().isEmpty) {
+      return "Informe seu e-mail";
+    }
+    if (!valor.contains("@") || !valor.contains(".")) {
+      return "Informe um e-mail válido";
+    }
+    return null;
+  }
+
+  void _finalizarCompra() {
+    FocusScope.of(context).unfocus();
+
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Preencha todos os campos obrigatórios para continuar."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return SegundaTela(
+            nomeCurso: widget.nomeCurso,
+            certificado: widget.certificado,
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +103,11 @@ class _TelaFormularioState extends State<TelaFormulario> {
           child: Card(
             child: Padding(
               padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Row(
                     children: [
                       Icon(
@@ -74,36 +139,53 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   ),
                   SizedBox(height: 10),
 
-                  TextField(
+                  TextFormField(
+                    controller: _nomeController,
+                    validator: (valor) =>
+                        _campoObrigatorio(valor, "seu nome completo"),
                     decoration: InputDecoration(
                       labelText: "Nome completo",
+                      suffixText: "*",
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 15),
 
-                  TextField(
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: _validarEmail,
                     decoration: InputDecoration(
                       labelText: "E-mail",
+                      suffixText: "*",
                       prefixIcon: Icon(Icons.email),
                       border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 15),
 
-                  TextField(
+                  TextFormField(
+                    controller: _cpfController,
+                    keyboardType: TextInputType.number,
+                    validator: (valor) => _campoObrigatorio(valor, "seu CPF"),
                     decoration: InputDecoration(
                       labelText: "CPF",
+                      suffixText: "*",
                       prefixIcon: Icon(Icons.badge),
                       border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 15),
 
-                  TextField(
+                  TextFormField(
+                    controller: _telefoneController,
+                    keyboardType: TextInputType.phone,
+                    validator: (valor) =>
+                        _campoObrigatorio(valor, "seu telefone"),
                     decoration: InputDecoration(
                       labelText: "Telefone",
+                      suffixText: "*",
                       prefixIcon: Icon(Icons.phone),
                       border: OutlineInputBorder(),
                     ),
@@ -120,18 +202,26 @@ class _TelaFormularioState extends State<TelaFormulario> {
                   ),
                   SizedBox(height: 10),
 
-                  TextField(
+                  TextFormField(
+                    controller: _cepController,
+                    keyboardType: TextInputType.number,
+                    validator: (valor) => _campoObrigatorio(valor, "seu CEP"),
                     decoration: InputDecoration(
                       labelText: "CEP",
+                      suffixText: "*",
                       prefixIcon: Icon(Icons.location_on),
                       border: OutlineInputBorder(),
                     ),
                   ),
                   SizedBox(height: 15),
 
-                  TextField(
+                  TextFormField(
+                    controller: _enderecoController,
+                    validator: (valor) =>
+                        _campoObrigatorio(valor, "seu endereço completo"),
                     decoration: InputDecoration(
                       labelText: "Endereço completo",
+                      suffixText: "*",
                       prefixIcon: Icon(Icons.home),
                       border: OutlineInputBorder(),
                     ),
@@ -184,9 +274,19 @@ class _TelaFormularioState extends State<TelaFormulario> {
 
                   SizedBox(height: 15),
 
-                  TextField(
+                  TextFormField(
+                    controller: _cartaoController,
+                    keyboardType: TextInputType.number,
+                    validator: formaPagamento == "Cartão de Crédito"
+                        ? (valor) =>
+                            _campoObrigatorio(valor, "o número do cartão")
+                        : null,
                     decoration: InputDecoration(
-                      labelText: "Número do cartão (se aplicável)",
+                      labelText: formaPagamento == "Cartão de Crédito"
+                          ? "Número do cartão"
+                          : "Número do cartão (opcional)",
+                      suffixText:
+                          formaPagamento == "Cartão de Crédito" ? "*" : null,
                       prefixIcon: Icon(Icons.credit_card),
                       border: OutlineInputBorder(),
                     ),
@@ -198,22 +298,11 @@ class _TelaFormularioState extends State<TelaFormulario> {
                     width: double.infinity,
                     child: ElevatedButton(
                       child: Text("Finalizar Compra"),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return SegundaTela(
-                                nomeCurso: widget.nomeCurso,
-                                certificado: widget.certificado,
-                              );
-                            },
-                          ),
-                        );
-                      },
+                      onPressed: _finalizarCompra,
                     ),
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
