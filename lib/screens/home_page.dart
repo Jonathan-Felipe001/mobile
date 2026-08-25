@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/curso_card.dart';
+import 'tela_login.dart';
+import 'tela_cadastro.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -68,6 +70,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            ListTile(
+              leading: Icon(Icons.login, color: Colors.blue),
+              title: Text("Login"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TelaLogin(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person_add, color: Colors.blue),
+              title: Text("Cadastro"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TelaCadastro(),
+                  ),
+                );
+              },
+            ),
+            Divider(),
             ListTile(
               leading: Icon(Icons.phone_android),
               title: Text("Flutter"),
