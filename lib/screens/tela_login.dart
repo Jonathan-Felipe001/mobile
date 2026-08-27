@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import '../models/sessao_model.dart';
+import '../services/database_service.dart';
+import '../services/preferencias_service.dart';
+import 'tela_cadastro.dart';
+import 'home_page.dart';
 
 class TelaLogin extends StatefulWidget {
+  final bool exibirVoltar;
+
+  TelaLogin({this.exibirVoltar = false});
+
   @override
   State<TelaLogin> createState() => _TelaLoginState();
 }
@@ -10,6 +19,7 @@ class _TelaLoginState extends State<TelaLogin> {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   bool _mostrarSenha = false;
+  bool _carregando = false;
 
   @override
   void dispose() {
@@ -18,16 +28,43 @@ class _TelaLoginState extends State<TelaLogin> {
     super.dispose();
   }
 
-  void _entrar() {
+  Future<void> _entrar() async {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _carregando = true);
+    final usuario = await DatabaseService.instance.autenticarUsuario(
+      _emailController.text,
+      _senhaController.text,
+    );
+
+    if (!mounted) return;
+    setState(() => _carregando = false);
+
+    if (usuario == null || usuario.id == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Formulário preenchido. Login pronto para ser conectado."),
-          backgroundColor: Colors.green,
+          content: Text("E-mail ou senha inválidos."),
+          backgroundColor: Colors.red,
         ),
       );
+      return;
     }
+
+    await PreferenciasService().salvarSessao(
+      SessaoModel(
+        usuarioId: usuario.id!,
+        nome: usuario.nome,
+        email: usuario.email,
+      ),
+    );
+
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+      (route) => false,
+    );
   }
 
   @override
@@ -35,6 +72,12 @@ class _TelaLoginState extends State<TelaLogin> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
+        leading: widget.exibirVoltar
+            ? IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -131,8 +174,31 @@ class _TelaLoginState extends State<TelaLogin> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _entrar,
-                        child: Text("Entrar"),
+                        onPressed: _carregando ? null : _entrar,
+                        child: _carregando
+                            ? SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text("Entrar"),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TelaCadastro(),
+                            ),
+                          );
+                        },
+                        child: Text("Ainda não tenho uma conta"),
                       ),
                     ),
                   ],

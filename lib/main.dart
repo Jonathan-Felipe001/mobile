@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/home_page.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(MeuApp());
@@ -64,7 +64,7 @@ class MeuApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
             .copyWith(secondary: Colors.blueAccent),
       ),
-      home: HomePage(),
+      home: SplashScreen(),
     );
   }
 }

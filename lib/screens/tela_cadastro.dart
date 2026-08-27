@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import '../models/sessao_model.dart';
+import '../models/usuario_model.dart';
+import '../services/database_service.dart';
+import '../services/preferencias_service.dart';
+import 'home_page.dart';
+import 'tela_login.dart';
 
 class TelaCadastro extends StatefulWidget {
   @override
@@ -13,6 +19,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
   final _confirmarSenhaController = TextEditingController();
   bool _mostrarSenha = false;
   bool _mostrarConfirmacao = false;
+  bool _carregando = false;
 
   @override
   void dispose() {
@@ -23,13 +30,42 @@ class _TelaCadastroState extends State<TelaCadastro> {
     super.dispose();
   }
 
-  void _cadastrar() {
+  Future<void> _cadastrar() async {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _carregando = true);
+    try {
+      final email = _emailController.text.trim().toLowerCase();
+      final usuarioId = await DatabaseService.instance.inserirUsuario(
+        UsuarioModel(
+          nome: _nomeController.text.trim(),
+          email: email,
+          senha: _senhaController.text,
+        ),
+      );
+
+      await PreferenciasService().salvarSessao(
+        SessaoModel(
+          usuarioId: usuarioId,
+          nome: _nomeController.text.trim(),
+          email: email,
+        ),
+      );
+
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+        (route) => false,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _carregando = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Formulário preenchido. Cadastro pronto para ser conectado."),
-          backgroundColor: Colors.green,
+          content: Text("Este e-mail já está cadastrado."),
+          backgroundColor: Colors.red,
         ),
       );
     }
@@ -184,8 +220,31 @@ class _TelaCadastroState extends State<TelaCadastro> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _cadastrar,
-                        child: Text("Cadastrar"),
+                        onPressed: _carregando ? null : _cadastrar,
+                        child: _carregando
+                            ? SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text("Cadastrar"),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TelaLogin(),
+                            ),
+                          );
+                        },
+                        child: Text("Já tenho uma conta"),
                       ),
                     ),
                   ],
