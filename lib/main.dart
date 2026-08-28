@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 
 void main() {
-  runApp(MeuApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MeuApp());
 }
 
 class MeuApp extends StatelessWidget {
+  const MeuApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -64,7 +67,7 @@ class MeuApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
             .copyWith(secondary: Colors.blueAccent),
       ),
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

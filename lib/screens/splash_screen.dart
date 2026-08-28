@@ -4,6 +4,8 @@ import 'tela_login.dart';
 import '../models/splash_model.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -29,7 +31,9 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _abrirTelaInicial() async {
-    await Future.delayed(Duration(milliseconds: 1800));
+    // Mantém a splash visível por tempo suficiente para o usuário percebê-la,
+    // mesmo quando a leitura da sessão local termina rapidamente.
+    await Future.delayed(Duration(milliseconds: 8000));
     if (!mounted) return;
 
     final possuiSessao = await _model.possuiSessaoAtiva();
